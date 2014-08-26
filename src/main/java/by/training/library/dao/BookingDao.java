@@ -2,7 +2,10 @@ package by.training.library.dao;
 
 import by.training.library.dao.pool.ConnectionPool;
 import by.training.library.dao.pool.ConnectionPoolException;
-import by.training.library.entity.*;
+import by.training.library.entity.Book;
+import by.training.library.entity.Booking;
+import by.training.library.entity.BookingType;
+import by.training.library.entity.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,8 +36,6 @@ public class BookingDao implements Dao<Booking> {
         return instance;
     }
 
-    private ConnectionPool pool = ConnectionPool.getInstance();
-
     public int getLastId() throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -42,7 +43,7 @@ public class BookingDao implements Dao<Booking> {
         try {
             int id = 0;
 
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(GET_LAST_ID_QUERY);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -65,7 +66,7 @@ public class BookingDao implements Dao<Booking> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(INSERT_QUERY);
 
             int id = getLastId() + 1;
@@ -77,9 +78,7 @@ public class BookingDao implements Dao<Booking> {
             statement.setDate(5, booking.getDateOfReturn());
             statement.setInt(6, booking.getType().getId());
 
-            int res = statement.executeUpdate();
-
-            if (res != 1) throw new DaoException("smth wrorg");
+            statement.executeUpdate();
 
             return booking;
         } catch (SQLException e) {
@@ -97,7 +96,7 @@ public class BookingDao implements Dao<Booking> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(SELECT_QUERY + BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -140,7 +139,7 @@ public class BookingDao implements Dao<Booking> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(UPDATE_QUERY);
 
 
@@ -152,7 +151,7 @@ public class BookingDao implements Dao<Booking> {
             statement.setInt(6, booking.getId());
 
             int res = statement.executeUpdate();
-            if (res != 1) throw new DaoException("smth wrong");
+            if (res != 1) throw new DaoException(res + " rows was changed");
         } catch (SQLException e) {
             throw new DaoException(e);
         } catch (ConnectionPoolException e) {
@@ -168,11 +167,11 @@ public class BookingDao implements Dao<Booking> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(DELETE_QUERY);
             statement.setInt(1, id);
             int res = statement.executeUpdate();
-            if (res != 1) throw new DaoException("smth wrong");
+            if (res != 1) throw new DaoException(res + " rows was changed");
         } catch (SQLException e) {
             throw new DaoException(e);
         } catch (ConnectionPoolException e) {
@@ -188,7 +187,7 @@ public class BookingDao implements Dao<Booking> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(SELECT_QUERY);
 
             resultSet = statement.executeQuery();

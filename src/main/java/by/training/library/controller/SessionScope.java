@@ -1,14 +1,14 @@
 package by.training.library.controller;
 
+import by.training.library.entity.Lang;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class SessionScope {
 
     public static final String USER_ID = "id";
     public static final String ADMIN = "admin";
-    public static final String LOCALE = "locale";
-    public static final String COMMAND = "command";
-    public static final String PAGE = "page";
+    public static final String LANG = "lang";
 
     public static void setUserId(HttpServletRequest request, int id) {
         request.getSession().setAttribute(USER_ID, id);
@@ -28,22 +28,13 @@ public class SessionScope {
         return (Boolean) admin;
     }
 
-    public static void setLocale(HttpServletRequest request, String locale) {
-        request.getSession().setAttribute(LOCALE, locale);
+    public static void setLocale(HttpServletRequest request, Lang lang) {
+        request.getSession().setAttribute(LANG, lang);
     }
 
-    public static String getLocale(HttpServletRequest request) {
-        Object locale = request.getSession().getAttribute(LOCALE);
-        return (String) locale;
-    }
-
-    public static void setPage(HttpServletRequest request, String page) {
-        request.getSession().setAttribute(PAGE, page);
-    }
-
-    public static String getPage(HttpServletRequest request) {
-        Object page = request.getSession().getAttribute(PAGE);
-        return (String) page;
+    public static Lang getLocale(HttpServletRequest request) {
+        Object lang = request.getSession().getAttribute(LANG);
+        return (Lang) lang;
     }
 }
 

@@ -2,9 +2,6 @@ package by.training.library.entity;
 
 public class Role {
 
-    public static final String ADMIN = "admin";
-    public static final String CLIENT = "client";
-
     private int id;
     private String name;
 

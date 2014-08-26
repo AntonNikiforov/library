@@ -6,6 +6,7 @@ import by.training.library.controller.Page;
 import by.training.library.controller.SessionScope;
 import by.training.library.entity.Booking;
 import by.training.library.service.BookingService;
+import by.training.library.service.exception.NoMoreBooksException;
 import by.training.library.service.exception.NoSuchBookException;
 import by.training.library.service.exception.NoSuchUserException;
 import by.training.library.service.exception.ServiceException;
@@ -24,7 +25,7 @@ public class AddBooking implements Command {
     public static final String BOOKING = "booking";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Boolean admin = SessionScope.isAdmin(request);
         if (admin == null || !admin) {
@@ -51,12 +52,18 @@ public class AddBooking implements Command {
 
             } catch (NoSuchUserException e) {
                 request.setAttribute(MESSAGE, e.getMessage());
+                return Page.ERROR_PAGE;
             } catch (NoSuchBookException e) {
                 request.setAttribute(MESSAGE, e.getMessage());
+                return Page.ERROR_PAGE;
+            } catch (NoMoreBooksException e) {
+                request.setAttribute(MESSAGE, e.getMessage());
+                return Page.ERROR_PAGE;
             } catch (ServiceException e) {
                 throw new CommandException(e);
-            } catch (NumberFormatException e) {
+            } catch (IllegalArgumentException e) {
                 request.setAttribute(MESSAGE, "wrong request");
+                return Page.ERROR_PAGE;
             }
         }
 
@@ -67,10 +74,8 @@ public class AddBooking implements Command {
             request.setAttribute(USER_ID, userParameter);
             request.setAttribute(BOOK_ID, bookParameter);
 
-            return Page.ADD_BOOKING_PAGE;
+            return Page.BOOKING_PAGE;
         } catch (ServiceException e) {
-            throw new CommandException(e);
-        } catch (NumberFormatException e) {
             throw new CommandException(e);
         }
     }

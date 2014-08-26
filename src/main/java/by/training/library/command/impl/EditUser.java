@@ -5,8 +5,8 @@ import by.training.library.command.CommandException;
 import by.training.library.controller.Page;
 import by.training.library.controller.SessionScope;
 import by.training.library.entity.Lang;
-import by.training.library.service.exception.ServiceException;
 import by.training.library.service.UserService;
+import by.training.library.service.exception.ServiceException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +27,7 @@ public class EditUser implements Command {
     public static final String MESSAGE = "msg";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Integer currentUserId = SessionScope.getUserId(request);
         Boolean admin = SessionScope.isAdmin(request);
@@ -83,11 +83,11 @@ public class EditUser implements Command {
 
                 if (currentUserId.equals(userId)) {
                     Lang lang = service.readLang(Integer.parseInt(langId));
-                    SessionScope.setLocale(request, lang.getName());
+                    SessionScope.setLocale(request, lang);
                 }
             }
 
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             request.setAttribute(MESSAGE, e.getMessage());
         } catch (ServiceException e) {
             throw new CommandException(e);
@@ -100,7 +100,7 @@ public class EditUser implements Command {
             request.setAttribute(LANG_LIST, service.getAllLangs());
             request.setAttribute(ROLE_LIST, service.getAllRoles());
 
-            return "/WEB-INF/jsp/settings.jsp";
+            return Command.USER;
         } catch (ServiceException e) {
             throw new CommandException(e);
         }

@@ -16,7 +16,7 @@ public class DeleteBooking implements Command {
     public static final String MESSAGE = "msg";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Boolean admin = SessionScope.isAdmin(request);
         if (admin == null || !admin) {
@@ -31,7 +31,7 @@ public class DeleteBooking implements Command {
             service.deleteBooking(bookingId);
 
             return Command.BOOKINGS;
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             request.setAttribute(MESSAGE, "wrong request");
             return Command.BOOKING;
         } catch (NoSuchBookingException e) {

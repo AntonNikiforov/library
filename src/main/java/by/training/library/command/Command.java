@@ -9,7 +9,6 @@ public interface Command {
 
     String NO_SUCH_COMMAND  = "";
     String START            = PREFIX + "start";
-    String SEARCH           = PREFIX + "search";
     String SWITCH_LANGUAGE  = PREFIX + "switch_lang";
 
     // user
@@ -38,5 +37,5 @@ public interface Command {
     String DELETE_BOOKING   = PREFIX + "delete_booking";
     String EDIT_BOOKING     = PREFIX + "edit_booking";
 
-    String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException;
+    String execute(HttpServletRequest request) throws CommandException;
 }

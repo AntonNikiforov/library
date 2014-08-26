@@ -10,12 +10,7 @@ public class ConnectionPoolHandler implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        try {
-            ConnectionPool.getInstance().open();
-        } catch (ConnectionPoolException e) {
-            e.printStackTrace();
-            servletContextEvent.getServletContext().setAttribute("error", e);
-        }
+        ConnectionPool.getInstance();
     }
 
     @Override

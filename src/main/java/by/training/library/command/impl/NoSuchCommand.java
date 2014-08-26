@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 public class NoSuchCommand implements Command {
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
         return Page.ERROR_PAGE;
     }
 }

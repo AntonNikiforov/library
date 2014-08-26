@@ -1,6 +1,5 @@
 package by.training.library.service;
 
-import by.training.library.dao.DaoException;
 import by.training.library.dao.*;
 import by.training.library.entity.Book;
 import by.training.library.entity.Booking;
@@ -25,10 +24,6 @@ public class BookingService {
     }
 
     public Booking createBooking(int userId, int bookId, int typeId) throws ServiceException {
-        if (userId <= 0 || bookId <= 0 || typeId <= 0) {
-            throw new ServiceException("illegal argument");
-        }
-
         try {
             UserDao userDao = UserDao.getInstance();
             User user = userDao.read(userId);
@@ -110,8 +105,13 @@ public class BookingService {
             Dao<Booking> dao = BookingDao.getInstance();
 
             User user = userDao.read(userId);
+            if (user == null) {
+                throw new NoSuchUserException("no such user");
+            }
             Booking booking = dao.read(id);
-
+            if (booking == null) {
+                throw new NoSuchBookingException("no such booking");
+            }
             booking.setUser(user);
             dao.update(booking);
 
@@ -121,16 +121,18 @@ public class BookingService {
     }
 
     public void changeBook(int id, int bookId) throws ServiceException {
-        if (id <= 0) throw new ServiceException("illegal argument");
-        if (bookId <= 0) throw new ServiceException("illegal argument");
-
         try {
             Dao<Book> bookDao = BookDao.getInstance();
             Dao<Booking> dao = BookingDao.getInstance();
 
             Book book = bookDao.read(bookId);
+            if (book == null) {
+                throw new NoSuchBookException("no such book");
+            }
             Booking booking = dao.read(id);
-
+            if (booking == null) {
+                throw new NoSuchBookingException("no such booking");
+            }
             booking.setBook(book);
             dao.update(booking);
 
@@ -140,13 +142,13 @@ public class BookingService {
     }
 
     public void changeDateOfIssue(int id, Date dateOfIssue) throws ServiceException {
-        if (id <= 0) throw new ServiceException("illegal argument");
-
         try {
             Dao<Booking> dao = BookingDao.getInstance();
 
             Booking booking = dao.read(id);
-
+            if (booking == null) {
+                throw new NoSuchBookingException("no such booking");
+            }
             booking.setDateOfIssue(dateOfIssue);
             dao.update(booking);
 
@@ -156,13 +158,13 @@ public class BookingService {
     }
 
     public void changeDateOfReturn(int id, Date dateOfReturn) throws ServiceException {
-        if (id <= 0) throw new ServiceException("illegal argument");
-
         try {
             Dao<Booking> dao = BookingDao.getInstance();
 
             Booking booking = dao.read(id);
-
+            if (booking == null) {
+                throw new NoSuchBookingException("no such booking");
+            }
             booking.setDateOfReturn(dateOfReturn);
             dao.update(booking);
 
@@ -172,16 +174,18 @@ public class BookingService {
     }
 
     public void changeType(int id, int typeId) throws ServiceException {
-        if (id <= 0) throw new ServiceException("illegal argument");
-        if (typeId <= 0) throw new ServiceException("illegal argument");
-
         try {
             Dao<BookingType> typeDao = BookingTypeDao.getInstance();
             Dao<Booking> dao = BookingDao.getInstance();
 
             BookingType type = typeDao.read(typeId);
+            if (type == null) {
+                throw new ServiceException("no such type");
+            }
             Booking booking = dao.read(id);
-
+            if (booking == null) {
+                throw new NoSuchBookingException("no such booking");
+            }
             booking.setType(type);
             dao.update(booking);
 
@@ -191,10 +195,6 @@ public class BookingService {
     }
 
     public void close(int id) throws ServiceException {
-        if (id <= 0) {
-            throw new ServiceException("illegal argument");
-        }
-
         changeDateOfReturn(id, DateHelper.getCurrentDate());
     }
 
@@ -228,8 +228,8 @@ public class BookingService {
     }
 
     public List<Booking> getAllBookings(int page, int numOnPage) throws ServiceException {
-        if (page <= 0) throw new ServiceException("illegal argument");
-        if (numOnPage <= 0) throw new ServiceException("illegal argument");
+        if (page <= 0) throw new IllegalArgumentException();
+        if (numOnPage <= 0) throw new IllegalArgumentException();
 
         int toIndex = page * numOnPage;
         int fromIndex = toIndex - numOnPage;

@@ -4,29 +4,37 @@ import by.training.library.command.Command;
 import by.training.library.command.CommandException;
 import by.training.library.controller.Page;
 import by.training.library.controller.SessionScope;
+import by.training.library.entity.Lang;
+import by.training.library.service.UserService;
+import by.training.library.service.exception.ServiceException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class SwitchLanguage implements Command {
 
-    public static final String LOCALE = "locale";
-    public static final String PAGE = "page";
+    public static final String LANG_ID = "locale";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
-        String locale = request.getParameter(LOCALE);
-        //String page = request.getParameter(PAGE);
-        String page = (String) request.getSession().getAttribute(SessionScope.PAGE);
-        if (page == null) {
-            page = Command.EDIT_USER;
-        }
-        if (locale == null) {
-            return Page.PREFIX + page;
-        }
+        Integer langId = Integer.valueOf(request.getParameter(LANG_ID));
 
-        request.getSession().setAttribute(SessionScope.LOCALE, locale);
-        return  page;
+        UserService service = UserService.getInstance();
+        try {
+            Lang lang = service.readLang(langId);
+
+            SessionScope.setLocale(request, lang);
+
+            Integer currentUserId = SessionScope.getUserId(request);
+            if (currentUserId == null) {
+                return Page.START_PAGE;
+            } else {
+                return Page.USER_PAGE;
+            }
+
+        } catch (ServiceException e) {
+            throw new CommandException(e);
+        }
     }
 }

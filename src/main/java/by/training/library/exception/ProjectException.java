@@ -15,4 +15,18 @@ public class ProjectException extends Exception {
     public Exception getHiddenException() {
         return hiddenException;
     }
+
+    @Override
+    public String getMessage() {
+        return hiddenException == null? super.getMessage() : hiddenException.getMessage();
+    }
+
+    @Override
+    public void printStackTrace() {
+        if (hiddenException == null) {
+            super.printStackTrace();
+        } else {
+            hiddenException.printStackTrace();
+        }
+    }
 }

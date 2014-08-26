@@ -33,8 +33,6 @@ public class GenreDao implements Dao<Genre> {
         return instance;
     }
 
-    private ConnectionPool pool = ConnectionPool.getInstance();
-
     public int getLastId() throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -42,7 +40,7 @@ public class GenreDao implements Dao<Genre> {
         try {
             int id = 0;
 
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(GET_LAST_ID_QUERY);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -65,7 +63,7 @@ public class GenreDao implements Dao<Genre> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(INSERT_QUERY);
 
             int id = getLastId() + 1;
@@ -74,8 +72,6 @@ public class GenreDao implements Dao<Genre> {
             statement.setString(2, genre.getName());
 
             int res = statement.executeUpdate();
-
-            if (res != 1) throw new DaoException("smth wrorg");
 
             return genre;
         } catch (SQLException e) {
@@ -93,7 +89,7 @@ public class GenreDao implements Dao<Genre> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(SELECT_QUERY + BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -122,7 +118,7 @@ public class GenreDao implements Dao<Genre> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(UPDATE_QUERY);
 
 
@@ -130,7 +126,7 @@ public class GenreDao implements Dao<Genre> {
             statement.setInt(2, genre.getId());
 
             int res = statement.executeUpdate();
-            if (res != 1) throw new DaoException("smth wrong");
+            if (res != 1) throw new DaoException(res + " rows was changed");
         } catch (SQLException e) {
             throw new DaoException(e);
         } catch (ConnectionPoolException e) {
@@ -146,11 +142,11 @@ public class GenreDao implements Dao<Genre> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(DELETE_QUERY);
             statement.setInt(1, id);
             int res = statement.executeUpdate();
-            if (res != 1) throw new DaoException("smth wrong");
+            if (res != 1) throw new DaoException(res + " rows was changed");
         } catch (SQLException e) {
             throw new DaoException(e);
         } catch (ConnectionPoolException e) {
@@ -166,7 +162,7 @@ public class GenreDao implements Dao<Genre> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(SELECT_QUERY);
 
             resultSet = statement.executeQuery();

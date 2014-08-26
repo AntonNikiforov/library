@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 public class Logout implements Command {
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         request.getSession().removeAttribute(SessionScope.ADMIN);
         request.getSession().removeAttribute(SessionScope.USER_ID);

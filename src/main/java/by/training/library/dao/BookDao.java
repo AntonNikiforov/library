@@ -2,7 +2,8 @@ package by.training.library.dao;
 
 import by.training.library.dao.pool.ConnectionPool;
 import by.training.library.dao.pool.ConnectionPoolException;
-import by.training.library.entity.*;
+import by.training.library.entity.Book;
+import by.training.library.entity.Genre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,8 +34,6 @@ public class BookDao implements Dao<Book> {
         return instance;
     }
 
-    private ConnectionPool pool = ConnectionPool.getInstance();
-
     public int getLastId() throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -42,7 +41,7 @@ public class BookDao implements Dao<Book> {
         try {
             int id = 0;
 
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(GET_LAST_ID_QUERY);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -65,7 +64,7 @@ public class BookDao implements Dao<Book> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(INSERT_QUERY);
 
             int id = getLastId() + 1;
@@ -77,9 +76,7 @@ public class BookDao implements Dao<Book> {
             statement.setInt(5, book.getNum());
             statement.setInt(6, book.getGenre().getId());
 
-            int res = statement.executeUpdate();
-
-            if (res != 1) throw new DaoException("smth wrorg");
+            statement.executeUpdate();
 
             return book;
         } catch (SQLException e) {
@@ -97,7 +94,7 @@ public class BookDao implements Dao<Book> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(SELECT_QUERY + BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -134,7 +131,7 @@ public class BookDao implements Dao<Book> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(UPDATE_QUERY);
 
             statement.setString(1, book.getName());
@@ -145,7 +142,7 @@ public class BookDao implements Dao<Book> {
             statement.setInt(6, book.getId());
 
             int res = statement.executeUpdate();
-            if (res != 1) throw new DaoException("smth wrong");
+            if (res != 1) throw new DaoException(res + " rows was changed");
         } catch (SQLException e) {
             throw new DaoException(e);
         } catch (ConnectionPoolException e) {
@@ -161,11 +158,11 @@ public class BookDao implements Dao<Book> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(DELETE_QUERY);
             statement.setInt(1, id);
             int res = statement.executeUpdate();
-            if (res != 1) throw new DaoException("smth wrong");
+            if (res != 1) throw new DaoException(res + " rows was changed");
         } catch (SQLException e) {
             throw new DaoException(e);
         } catch (ConnectionPoolException e) {
@@ -181,7 +178,7 @@ public class BookDao implements Dao<Book> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = pool.getConnection();
+            connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(SELECT_QUERY);
 
             resultSet = statement.executeQuery();

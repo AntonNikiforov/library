@@ -2,14 +2,6 @@ package by.training.library.util;
 
 public class SearchHelper {
 
-    public static void main(String[] args) {
-
-        String query = " ";
-        String regexp = getRegex(query);
-
-        System.out.println(regexp);
-    }
-
     public static String getRegex(String q) {
         String[] parts = q.split(" ");
 

@@ -5,9 +5,10 @@ import by.training.library.command.CommandException;
 import by.training.library.controller.Page;
 import by.training.library.controller.SessionScope;
 import by.training.library.entity.User;
+import by.training.library.service.BookingService;
+import by.training.library.service.UserService;
 import by.training.library.service.exception.NoSuchUserException;
 import by.training.library.service.exception.ServiceException;
-import by.training.library.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,41 +16,44 @@ import javax.servlet.http.HttpServletResponse;
 public class ShowUser implements Command {
 
     public static final String USER_ID = "id";
+
     public static final String USER = "user";
+    public static final String LANG_LIST = "lang_list";
+    public static final String ROLE_LIST = "role_list";
+    public static final String TYPE_LIST = "type_list";
     public static final String MESSAGE = "msg";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Integer currentUserId = SessionScope.getUserId(request);
         if (currentUserId == null) {
             return Page.START_PAGE;
         }
 
-        String userId = request.getParameter(USER_ID);
-
         try {
-           // CustomDao dao = new CustomDao();
-            //UserDao dao = DaoFactory.getInstance().getUserDao();
+            Integer userId = request.getParameter(USER_ID) == null? currentUserId : Integer.parseInt(request.getParameter(USER_ID));
+            userId = request.getAttribute(USER_ID) == null? userId : (Integer) request.getAttribute(USER_ID);
+
             UserService service = UserService.getInstance();
-            User user;
 
+            User user = service.readUser(userId);
 
-            if (userId == null) {
-                user = service.readUser(currentUserId);
-
-            } else {
-                user = service.readUser(Integer.parseInt(userId));
-            }
             request.setAttribute(USER, user);
-            //return "/user.jsp";
+            request.setAttribute(LANG_LIST, service.getAllLangs());
+            request.setAttribute(ROLE_LIST, service.getAllRoles());
+
+            BookingService bookingService = BookingService.getInstance();
+            request.setAttribute(TYPE_LIST, bookingService.getAllTypes());
+
             return Page.USER_PAGE;
-        } catch (NumberFormatException e) {
+
+        } catch (IllegalArgumentException e) {
             request.setAttribute(MESSAGE, e.getMessage());
-            return Command.BOOKINGS;
+            return Page.ERROR_PAGE;
         } catch (NoSuchUserException e) {
             request.setAttribute(MESSAGE, e.getMessage());
-            return Command.BOOKINGS;
+            return Page.ERROR_PAGE;
         } catch (ServiceException e) {
             throw new CommandException(e);
         }

@@ -15,7 +15,7 @@ public class CloseBooking implements Command {
     public static final String MESSAGE = "msg";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Boolean admin = SessionScope.isAdmin(request);
         if (admin == null || !admin) {
@@ -30,8 +30,8 @@ public class CloseBooking implements Command {
             service.close(bookingId);
 
             return Command.BOOKING;//"/booking?id=" + bookingId;
-        } catch (NumberFormatException e) {
-            request.setAttribute(MESSAGE, "number format exception");
+        } catch (IllegalArgumentException e) {
+            request.setAttribute(MESSAGE, "wrong request");
             return Command.BOOKINGS;
         } catch (ServiceException e) {
             throw new CommandException(e);

@@ -15,11 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 public class ShowBooking implements Command {
 
     public static final String BOOKING_ID = "id";
+
     public static final String BOOKING = "booking";
+    public static final String TYPE_LIST = "type_list";
     public static final String MESSAGE = "msg";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Integer currentUserId = SessionScope.getUserId(request);
         Boolean admin = SessionScope.isAdmin(request);
@@ -37,10 +39,11 @@ public class ShowBooking implements Command {
             }
 
             request.setAttribute(BOOKING, booking);
+            request.setAttribute(TYPE_LIST, service.getAllTypes());
 
             return Page.BOOKING_PAGE;
 
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             request.setAttribute(MESSAGE, "wrong request");
             return Command.BOOKINGS;
         } catch (NoSuchBookingException e) {

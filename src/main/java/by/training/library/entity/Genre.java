@@ -2,9 +2,6 @@ package by.training.library.entity;
 
 public class Genre {
 
-    public static final String EN = "en";
-    public static final String RU = "ru";
-
     private int id;
     private String name;
 

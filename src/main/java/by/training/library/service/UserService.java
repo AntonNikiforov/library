@@ -1,23 +1,25 @@
 package by.training.library.service;
 
-import by.training.library.dao.DaoException;
-import by.training.library.dao.Dao;
-import by.training.library.dao.LangDao;
-import by.training.library.dao.RoleDao;
-import by.training.library.dao.UserDao;
+import by.training.library.dao.*;
 import by.training.library.entity.Booking;
 import by.training.library.entity.Lang;
 import by.training.library.entity.Role;
 import by.training.library.entity.User;
 import by.training.library.service.exception.DeleteException;
+import by.training.library.service.exception.EmailAlreadyInUseException;
 import by.training.library.service.exception.NoSuchUserException;
 import by.training.library.service.exception.ServiceException;
-import by.training.library.service.exception.UserAlreadyExistsException;
 import by.training.library.util.Security;
 
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *  User Service
+ *  <p>
+ *      provides methods
+ *  </p>
+ */
 public class UserService {
 
     private static final UserService instance = new UserService();
@@ -30,7 +32,7 @@ public class UserService {
 
     public User login(String email, String password) throws ServiceException {
         if (email == null || password == null) {
-            throw new ServiceException("illegal argument");
+            throw new IllegalArgumentException();
         }
 
         User user = null;
@@ -46,6 +48,7 @@ public class UserService {
                 }
             }
         } catch (DaoException e) {
+            e.getHiddenException().printStackTrace();
             throw new ServiceException(e);
         }
 
@@ -58,12 +61,7 @@ public class UserService {
 
     public User createUser(String email, String password, String name, String surname) throws ServiceException {
         if (email == null || password == null || name == null || surname == null) {
-            throw new ServiceException("illegal argument");
-        }
-
-        if (login(email, password) != null) {
-            System.out.println(email);
-            throw new UserAlreadyExistsException("user with email: " + email + " already exists");
+            throw new IllegalArgumentException();
         }
 
         try {
@@ -82,6 +80,11 @@ public class UserService {
             user.setRole(role);
 
             Dao<User> dao = UserDao.getInstance();
+            for (User aUser : dao.getAll()) {
+                if (aUser.getEmail().equalsIgnoreCase(email)) {
+                    throw new EmailAlreadyInUseException("email " + email + " already in use");
+                }
+            }
             user = dao.create(user);
 
             if (user != null) {
@@ -146,6 +149,13 @@ public class UserService {
             if (user == null) {
                 throw new NoSuchUserException("no user with id " + id);
             }
+
+            for (User aUser : dao.getAll()) {
+                if (aUser.getEmail().equalsIgnoreCase(email)) {
+                    throw new EmailAlreadyInUseException("email " + email + " already in use");
+                }
+            }
+
             user.setEmail(email);
             dao.update(user);
 
@@ -215,6 +225,7 @@ public class UserService {
             if (user == null) {
                 throw new NoSuchUserException("no user with id " + id);
             }
+
             user.setLang(lang);
             dao.update(user);
 
@@ -272,8 +283,8 @@ public class UserService {
     }
 
     public List<User> getAllUsers(int page, int numOnPage) throws ServiceException {
-        if (page <= 0) throw new ServiceException("illegal argument");
-        if (numOnPage <= 0) throw new ServiceException("illegal argument");
+        if (page <= 0) throw new IllegalArgumentException();
+        if (numOnPage <= 0) throw new IllegalArgumentException();
 
         int toIndex = page * numOnPage;
         int fromIndex = toIndex - numOnPage;
@@ -322,8 +333,6 @@ public class UserService {
     }
 
     public Lang readLang(int langId) throws ServiceException {
-        if (langId <= 0) throw new ServiceException("illegal argument");
-
         try {
             Dao<Lang> dao = LangDao.getInstance();
             Lang lang = dao.read(langId);
@@ -338,8 +347,6 @@ public class UserService {
     }
 
     public List<Booking> getAllBookings(int userId) throws ServiceException {
-        if (userId <= 0) throw new ServiceException("illegal argument");
-
         readUser(userId);
 /*
         try {
@@ -372,8 +379,6 @@ public class UserService {
     }
 
     public List<Booking> getAllOpenBookings(int userId) throws ServiceException {
-        if (userId <= 0) throw new ServiceException("illegal argument");
-
         readUser(userId);
 
         List<Booking> list = new LinkedList<Booking>();

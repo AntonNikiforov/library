@@ -21,10 +21,10 @@ public class AddBook implements Command {
 
     public static final String MESSAGE = "msg";
     public static final String GENRE_LIST = "genre_list";
-    public static final String BOOK = "book";
+    public static final String BOOK_ID = "id";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Boolean admin = SessionScope.isAdmin(request);
         if (admin == null || !admin) {
@@ -38,9 +38,6 @@ public class AddBook implements Command {
         String genreId = request.getParameter(GENRE);
 
         if (name != null && author != null && year != null && numOfBooks != null && genreId != null) {
-            if ("".equals(name) || "".equals(author) || "".equals(year) || "".equals(numOfBooks)) {
-                request.setAttribute(MESSAGE, "empty fields");
-            } else {
 
                 try {
                     BookService service = BookService.getInstance();
@@ -48,22 +45,23 @@ public class AddBook implements Command {
                             Integer.parseInt(year), Integer.parseInt(numOfBooks), Integer.parseInt(genreId));
 
                     //return "/book?id=" + id;
-                    request.setAttribute(BOOK, book);
-                    return Page.BOOK_PAGE;
+                    request.setAttribute(BOOK_ID, book.getId());
+                    return Command.BOOK;
 
                 } catch (ServiceException e) {
                     throw new CommandException(e);
-                } catch (NumberFormatException e) {
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
                     request.setAttribute(MESSAGE, "wrong request");
                 }
-            }
+
         }
 
         try {
             BookService service = BookService.getInstance();
             request.setAttribute(GENRE_LIST, service.getAllGenres());
 
-            return Page.ADD_BOOK_PAGE;
+            return Page.BOOK_PAGE;
 
         } catch (ServiceException e) {
             throw new CommandException(e);

@@ -6,10 +6,6 @@ import java.security.NoSuchAlgorithmException;
 
 public class Security {
 
-    public static void main(String[] args) {
-
-    }
-
     public static String hideEmail(String email) {
         String[] parts = email.split("@");
         return parts[0].substring(0,1) + "***@" + parts[1];

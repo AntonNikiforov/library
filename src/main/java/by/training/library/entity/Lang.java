@@ -2,9 +2,6 @@ package by.training.library.entity;
 
 public class Lang {
 
-    public static final String EN = "en";
-    public static final String RU = "ru";
-
     private int id;
     private String name;
 

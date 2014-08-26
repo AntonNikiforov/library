@@ -67,7 +67,7 @@ public class User {
     }
 
     public boolean isAdmin() {
-        return role.getName().equalsIgnoreCase(Role.ADMIN);
+        return role.getId() == 1;
     }
 
     @Override

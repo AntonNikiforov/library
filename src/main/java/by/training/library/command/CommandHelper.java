@@ -17,7 +17,6 @@ public class CommandHelper {
         commands.put(Command.SIGN_IN,           new Login());
         commands.put(Command.SIGN_UP,           new AddUser());
         commands.put(Command.SIGN_OUT,          new Logout());
-        commands.put(Command.SEARCH,            new Search());
         commands.put(Command.USERS,             new ShowUsers());
         commands.put(Command.USER,              new ShowUser());
         commands.put(Command.ADD_USER,          new AddUser());
@@ -40,12 +39,9 @@ public class CommandHelper {
         return instance;
     }
 
-    public String getCommandName(HttpServletRequest request) {
-        return request.getServletPath();
-    }
+    public Command getCommand(HttpServletRequest request) {
 
-    public Command getCommand(String commandName) {
-
+        String commandName = request.getServletPath();
         Command command = commands.get(commandName);
 
         if (null == command) {

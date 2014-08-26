@@ -22,7 +22,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="library-0.3" />
+        <module name="html&amp;css&amp;js" />
       </profile>
     </annotationProcessing>
   </component>

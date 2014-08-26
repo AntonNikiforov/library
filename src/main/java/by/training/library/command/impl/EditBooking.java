@@ -20,14 +20,13 @@ public class EditBooking implements Command {
     public static final String TYPE_ID = "type_id";
     public static final String DATE_OF_ISSUE = "date_of_issue";
     public static final String DATE_OF_RETURN = "date_of_return";
-    public static final String RETURNED = "returned";
 
     public static final String TYPE_LIST = "type_list";
     public static final String MESSAGE = "msg";
     public static final String BOOKING = "booking";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
         Boolean admin = SessionScope.isAdmin(request);
 
         if (admin == null || !admin) {
@@ -67,9 +66,9 @@ public class EditBooking implements Command {
             request.setAttribute(TYPE_LIST, service.getAllTypes());
 
             //return "/edit_book.jsp";
-            return Page.EDIT_BOOKING_PAGE;
+            return Page.BOOKING_PAGE;
 
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             request.setAttribute(MESSAGE, e.getMessage());
             return Command.EDIT_BOOKING;
         } catch (ServiceException e) {

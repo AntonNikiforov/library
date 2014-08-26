@@ -25,7 +25,7 @@ public class EditBook implements Command {
     public static final String MESSAGE = "msg";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Boolean admin = SessionScope.isAdmin(request);
 
@@ -70,10 +70,10 @@ public class EditBook implements Command {
             request.setAttribute(GENRE_LIST, service.getAllGenres());
 
             //return "/edit_book.jsp";
-            return Page.EDIT_BOOK_PAGE;
+            return Page.BOOK_PAGE;
 
-        } catch (NumberFormatException e) {
-            request.setAttribute(MESSAGE, "");
+        } catch (IllegalArgumentException e) {
+            request.setAttribute(MESSAGE, "wrong request");
             return Command.EDIT_BOOK;
         } catch (ServiceException e) {
             throw new CommandException(e);

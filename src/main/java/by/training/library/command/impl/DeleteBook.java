@@ -18,7 +18,7 @@ public class DeleteBook implements Command {
     public static final String MESSAGE = "msg";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Boolean admin = SessionScope.isAdmin(request);
         if (admin == null || !admin) {
@@ -34,7 +34,7 @@ public class DeleteBook implements Command {
 
             return Command.BOOKS;
 
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             request.setAttribute(MESSAGE, "wrong request");
             return Command.BOOKS;
         } catch (NoSuchBookException e) {

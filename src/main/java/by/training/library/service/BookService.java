@@ -1,8 +1,8 @@
 package by.training.library.service;
 
 import by.training.library.dao.BookDao;
-import by.training.library.dao.DaoException;
 import by.training.library.dao.Dao;
+import by.training.library.dao.DaoException;
 import by.training.library.dao.GenreDao;
 import by.training.library.entity.Book;
 import by.training.library.entity.Booking;
@@ -13,6 +13,7 @@ import by.training.library.service.exception.NoSuchBookException;
 import by.training.library.service.exception.ServiceException;
 import by.training.library.util.SearchHelper;
 
+import javax.servlet.ServletException;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,18 +31,14 @@ public class BookService {
 
     public Book createBook(String name, String author, int year, int num, int genreId) throws ServiceException {
         if (name == null || author == null) {
-            throw new ServiceException("illegal argument");
+            throw new IllegalArgumentException();
         }
-        if (year < 0 || year > Calendar.getInstance().get(Calendar.YEAR)) {
-            throw new ServiceException("illegal argument");
+        if (year < 0) {
+            throw new IllegalArgumentException();
         }
         if (num <= 0 || genreId <= 0) {
-            throw new ServiceException("illegal argument");
+            throw new IllegalArgumentException();
         }
-
-
-
-        System.out.println("norm");
 
         try {
             Dao<Book> dao = BookDao.getInstance();
@@ -101,7 +98,7 @@ public class BookService {
 
     public void changeName(int bookId, String name) throws ServiceException {
         if (name == null) {
-            throw new ServiceException("illegal argument");
+            throw new IllegalArgumentException();
         }
 
         try {
@@ -119,7 +116,7 @@ public class BookService {
 
     public void changeAuthor(int bookId, String author) throws ServiceException {
         if (author == null) {
-            throw new ServiceException("illegal argument");
+            throw new IllegalArgumentException();
         }
 
         try {
@@ -137,7 +134,7 @@ public class BookService {
 
     public void changeYear(int bookId, int year) throws ServiceException {
         if (year <= 0) {
-            throw new ServiceException("illegal argument");
+            throw new IllegalArgumentException();
         }
 
         try {
@@ -155,7 +152,7 @@ public class BookService {
 
     public void changeNum(int bookId, int num) throws ServiceException {
         if (num < 0) {
-            throw new ServiceException("illegal argument");
+            throw new IllegalArgumentException();
         }
 
         try {
@@ -165,7 +162,6 @@ public class BookService {
                 throw new NoSuchBookException("no book with id " + bookId);
             }
             int numInLibNow = book.getNum() - getAllOpenBookings(bookId).size();
-            if (numInLibNow - num < 0) throw new NoMoreBooksException(numInLibNow + " - " + num + " < 0");
 
             book.setNum(num);
             dao.update(book);
@@ -175,10 +171,6 @@ public class BookService {
     }
 
     public void changeGenre(int bookId, int genreId) throws ServiceException {
-        if (bookId <= 0 || genreId <= 0) {
-            throw new ServiceException("illegal argument");
-        }
-
         try {
             Dao<Book> dao = BookDao.getInstance();
             Dao<Genre> genreDao = GenreDao.getInstance();
@@ -198,19 +190,20 @@ public class BookService {
         }
     }
 
-    public int getNumOfBooks() throws ServiceException {
+    public List<Book> getAll() throws ServiceException {
         try {
             Dao<Book> dao = BookDao.getInstance();
 
-            return dao.getAll().size();
+            return dao.getAll();
+
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
     }
 
     public List<Book> getAll(int page, int numOnPage) throws ServiceException {
-        if (page <= 0) throw new ServiceException("illegal argument");
-        if (numOnPage <= 0) throw new ServiceException("illegal argument");
+        if (page <= 0) throw new IllegalArgumentException();
+        if (numOnPage <= 0) throw new IllegalArgumentException();
 
         int toIndex = page * numOnPage;
         int fromIndex = toIndex - numOnPage;
@@ -232,7 +225,7 @@ public class BookService {
     }
 
     public List<Book> searchByName(String name) throws ServiceException {
-        if (name == null) throw new ServiceException("illegal argument");
+        if (name == null) throw new IllegalArgumentException();
 
         String regexp = SearchHelper.getRegex(name);
         Pattern pattern = Pattern.compile(regexp);
@@ -256,9 +249,9 @@ public class BookService {
     }
 
     public List<Book> searchByName(String name, int page, int numOnPage) throws ServiceException {
-        if (name == null) throw new ServiceException("illegal argument");
-        if (page <= 0) throw new ServiceException("illegal argument");
-        if (numOnPage <= 0) throw new ServiceException("illegal argument");
+        if (name == null) throw new IllegalArgumentException();
+        if (page <= 0) throw new IllegalArgumentException();
+        if (numOnPage <= 0) throw new IllegalArgumentException();
 
         int toIndex = page * numOnPage;
         int fromIndex = toIndex - numOnPage;
@@ -282,8 +275,6 @@ public class BookService {
     }
 
     public List<Booking> getAllBookings(int bookId) throws ServiceException {
-        if (bookId <= 0) throw new ServiceException("illegal argument");
-
         readBook(bookId);
 /*
         try {
@@ -316,8 +307,6 @@ public class BookService {
     }
 
     public List<Booking> getAllOpenBookings(int bookId) throws ServiceException {
-        if (bookId <= 0) throw new ServiceException("illegal argument");
-
         readBook(bookId);
 
         List<Booking> list = new LinkedList<Booking>();

@@ -4,10 +4,10 @@ import by.training.library.command.Command;
 import by.training.library.command.CommandException;
 import by.training.library.controller.Page;
 import by.training.library.controller.SessionScope;
+import by.training.library.service.UserService;
 import by.training.library.service.exception.DeleteException;
 import by.training.library.service.exception.NoSuchUserException;
 import by.training.library.service.exception.ServiceException;
-import by.training.library.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +18,7 @@ public class DeleteUser implements Command {
     public static final String MESSAGE = "msg";
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
+    public String execute(HttpServletRequest request) throws CommandException {
 
         Integer currentUserId = SessionScope.getUserId(request);
         Boolean admin = SessionScope.isAdmin(request);
@@ -43,7 +43,7 @@ public class DeleteUser implements Command {
             }
 
             return Command.USERS;
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             request.setAttribute(MESSAGE, "wrong request");
             return Command.USERS;
         } catch (NoSuchUserException e) {
